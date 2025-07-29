@@ -1,0 +1,7 @@
+-- liquibase formatted sql
+-- changeset SAMQA:1753779761136 stripComments:false logicalFilePath:BASE_RELEASE\samqa\sequences\compliance_quote_seq.sql runAlways:false runOnChange:false replaceIfExists:true failOnError:true
+-- sqlcl_snapshot src/database/samqa/sequences/compliance_quote_seq.sql:null:4c875d14fb24de54991d7aada32dea08adc19006:create
+
+create sequence samqa.compliance_quote_seq minvalue 1 maxvalue 999999999 increment by 1 start with 432944 nocache noorder nocycle nokeep
+noscale global;
+
