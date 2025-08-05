@@ -1,0 +1,7 @@
+-- liquibase formatted sql
+-- changeset SAMQA:1754374147628 stripComments:false logicalFilePath:BASE_RELEASE\samqa\sequences\ben_plan_history_seq.sql runAlways:false runOnChange:false replaceIfExists:true failOnError:true
+-- sqlcl_snapshot src/database/samqa/sequences/ben_plan_history_seq.sql:null:a052c24a2490437d9f0a035bb0ea0bdfb5e11c3e:create
+
+create sequence samqa.ben_plan_history_seq minvalue 1 maxvalue 9999999999999999999999999999 increment by 1 start with 754767 cache 20
+noorder nocycle nokeep noscale global;
+

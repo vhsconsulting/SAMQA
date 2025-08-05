@@ -1,0 +1,40 @@
+-- liquibase formatted sql
+-- changeset SAMQA:1754373942421 stripComments:false logicalFilePath:BASE_RELEASE\samqa\object_grants\object_grants_as_grantor.samqa.table.user_page_access.sql runAlways:false runOnChange:false replaceIfExists:true failOnError:true
+-- sqlcl_snapshot src/database/samqa/object_grants/object_grants_as_grantor.samqa.table.user_page_access.sql:null:bf30ce9852731378557d14e8e88604f8d446ba88:create
+
+grant alter on samqa.user_page_access to shavee;
+
+grant delete on samqa.user_page_access to rl_sam_rw;
+
+grant delete on samqa.user_page_access to shavee;
+
+grant index on samqa.user_page_access to shavee;
+
+grant insert on samqa.user_page_access to rl_sam_rw;
+
+grant insert on samqa.user_page_access to shavee;
+
+grant select on samqa.user_page_access to rl_sam_ro;
+
+grant select on samqa.user_page_access to rl_sam_rw;
+
+grant select on samqa.user_page_access to rl_sam1_ro;
+
+grant select on samqa.user_page_access to shavee;
+
+grant update on samqa.user_page_access to rl_sam_rw;
+
+grant update on samqa.user_page_access to shavee;
+
+grant references on samqa.user_page_access to shavee;
+
+grant read on samqa.user_page_access to shavee;
+
+grant on commit refresh on samqa.user_page_access to shavee;
+
+grant query rewrite on samqa.user_page_access to shavee;
+
+grant debug on samqa.user_page_access to shavee;
+
+grant flashback on samqa.user_page_access to shavee;
+

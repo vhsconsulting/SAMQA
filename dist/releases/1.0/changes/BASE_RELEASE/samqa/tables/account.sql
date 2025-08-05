@@ -1,0 +1,129 @@
+-- liquibase formatted sql
+-- changeset SAMQA:1754374150769 stripComments:false logicalFilePath:BASE_RELEASE\samqa\tables\account.sql runAlways:false runOnChange:false replaceIfExists:true failOnError:true
+-- sqlcl_snapshot src/database/samqa/tables/account.sql:null:88e7085ba8f024e35e587d125236068d0ae621ea:create
+
+create table samqa.account (
+    acc_id                       number(9, 0) not null enable,
+    pers_id                      number(9, 0),
+    entrp_id                     number(9, 0),
+    acc_num                      varchar2(20 byte) not null enable,
+    plan_code                    number(3, 0) not null enable,
+    start_date                   date not null enable,
+    end_date                     date,
+    start_amount                 number(15, 2),
+    last_pay_num                 number(9, 0),
+    broker_id                    number(9, 0) not null enable,
+    broker_pay                   number(3, 0),
+    ga_id                        number,
+    note                         varchar2(4000 byte),
+    fee_ini                      number(15, 2),
+    fee_setup                    number(15, 2),
+    fee_maint                    number(15, 2),
+    month_pay                    number(15, 2),
+    pay_code                     number(3, 0),
+    pay_period                   number(3, 0),
+    reg_date                     date default sysdate,
+    account_status               number,
+    suspended_date               date,
+    complete_flag                number,
+    account_reopen_date          date default null,
+    signature_on_file            varchar2(30 byte) default 'N',
+    salesrep_id                  number,
+    plan_change_date             date,
+    confirmation_date            date,
+    hsa_effective_date           date,
+    catchup_flag                 varchar2(1 byte) default 'N',
+    creation_date                date,
+    created_by                   number,
+    last_update_date             date,
+    last_updated_by              number,
+    verified_by                  number,
+    account_type                 varchar2(30 byte) default 'HSA',
+    bps_acc_num                  varchar2(150 byte),
+    annual_election              number,
+    bps_hra_plan                 varchar2(30 byte),
+    blocked_flag                 varchar2(1 byte) default 'N',
+    enrollment_source            varchar2(30 byte) default 'PAPER',
+    lang_perf                    varchar2(30 byte) default 'ENGLISH',
+    payroll_integration          varchar2(1 byte) default 'N',
+    id_verified                  varchar2(1 byte) default 'N',
+    closed_reason                varchar2(30 byte),
+    takeover_flag                varchar2(10 byte),
+    verified_date                date,
+    decline_date                 date,
+    am_id                        number,
+    at_risk_of                   varchar2(1 byte),
+    termination_reason           varchar2(200 byte),
+    migrated_flag                varchar2(1 byte),
+    referral_url                 varchar2(255 byte),
+    referral_code                varchar2(100 byte),
+    enrolle_type                 varchar2(30 byte),
+    enrolled_by                  number,
+    signed_by                    varchar2(30 byte),
+    sign_type                    varchar2(30 byte),
+    show_account_online          varchar2(1 byte) default 'Y',
+    first_activity_date          date,
+    enrolled_date                date,
+    renewed_date                 date,
+    renewed_by                   varchar2(30 byte),
+    resubmit_flag                varchar2(1 byte) default 'N',
+    renewal_resubmit_flag        varchar2(1 byte) default 'N',
+    submit_by                    number,
+    agreement_flag               varchar2(1 byte),
+    agreement_read_date          varchar2(30 byte),
+    agreement_read_user_id       number,
+    hra_type                     varchar2(20 byte),
+    signature_account_status     number,
+    renewal_signed_by            varchar2(30 byte),
+    renewal_sign_type            varchar2(30 byte),
+    renewed_by_id                number,
+    renewed_by_user_id           number,
+    renewal_resubmit_assigned_to varchar2(10 byte),
+    verified_by_sales            number,
+    verified_sales_date          date,
+    id_verified_sales            varchar2(1 byte) default 'N',
+    spec_right_notice_dt         date,
+    crm_id                       number
+);
+
+create index samqa.account_n2 on
+    samqa.account (
+        acc_num,
+        account_status
+    );
+
+create unique index samqa.acc_pk on
+    samqa.account (
+        acc_id
+    );
+
+create unique index samqa.account_pers_id on
+    samqa.account (
+        pers_id
+    );
+
+create unique index samqa.account_entrp_id on
+    samqa.account (
+        entrp_id
+    );
+
+alter table samqa.account
+    add constraint account_entrp_id unique ( entrp_id )
+        using index samqa.account_entrp_id enable;
+
+alter table samqa.account
+    add constraint account_num unique ( acc_num )
+        using index samqa.account_n2 enable;
+
+alter table samqa.account
+    add constraint account_pay_period check ( pay_period between 1 and 8 ) enable;
+
+alter table samqa.account
+    add constraint account_pers_id unique ( pers_id )
+        using index samqa.account_pers_id enable;
+
+alter table samqa.account
+    add constraint acc_pk
+        primary key ( acc_id )
+            using index samqa.acc_pk enable;
+

@@ -1,0 +1,350 @@
+-- liquibase formatted sql
+-- changeset SAMQA:1754374052080 stripComments:false logicalFilePath:BASE_RELEASE\samqa\package_bodies\pc_lex.sql runAlways:false runOnChange:false replaceIfExists:true failOnError:true
+-- sqlcl_snapshot src/database/samqa/package_bodies/pc_lex.sql:null:cab32e1595d9c74b3b802680f29968c4ca1da522:create
+
+create or replace package body samqa.pc_lex is
+
+-- ??????????? ???? ?? ?????????
+    dflt_word_delims varchar2(64) := ' +-*/=<>()[]{}.,:;"~`?!@%^&|'
+                                     || chr(9)
+                                     || chr(10)
+                                     || chr(13);
+    crlf_v           char(2) := chr(13)
+                      || chr(10);   -- ??????? ?????? + ??????? ???????
+/* ************************************************ */
+    function word_count (
+        text_in            in varchar2,
+        word_delimiters_in in varchar2 default ''
+    ) return number is
+
+        ret_val     number := 0;  -- ???????????? ????????
+        pos         number;           -- ??????? ???????-???????????
+        posn        number;          -- ??????? ?????????? ???????-???????????
+        text        varchar2(32000); -- ??????????????? ??????? ?????
+        word_delims varchar2(255) := nvl(word_delimiters_in, dflt_word_delims); -- ?????? ????????-????????????
+        delims_long varchar2(255); -- ?????? ?????????? ????????????
+        delim_ch    varchar2(1);      -- ??????-???????????
+    begin
+  -- ??????? ? ?????? ????????????? ??????????? ?? ???? ? ??? ??
+        delim_ch := substr(word_delims, 1, 1);
+        delims_long := rpad(delim_ch,
+                            length(word_delims),
+                            delim_ch);
+        text := delim_ch
+                || translate(text_in, word_delims, delims_long)
+                || delim_ch;
+  -- ?????????? ???-?? ????
+        pos := 1;
+        while pos > 0 loop
+            posn := instr(text, delim_ch, pos + 1);
+            if posn > pos + 1 then
+      -- ????? ????????? ????????????? ???? ???????? ??????? (?????)
+                ret_val := ret_val + 1;
+            end if;
+            pos := posn;
+        end loop;
+
+        return ( ret_val );
+    exception
+        when others then
+            return ( -1 );
+    end word_count;
+/* ************************************************ */
+    function get_word (
+        text_in            in varchar2,
+        word_no_in         in number,
+        word_delimiters_in in varchar2 default ''
+    ) return varchar2 is
+
+        ret_val     varchar2(32000) := ''; -- ???????????? ????????
+        word_no     number := 0;        -- ??????? ????
+        text        varchar2(32000) := ''; -- ??????????????? ??????? ?????
+        word_delims varchar2(255) := nvl(word_delimiters_in, dflt_word_delims);  -- ????? ???????? - ????????????
+        delims_long varchar2(255);  -- ?????? ?????????? ????????????
+        delim_ch    varchar2(1);       -- ??????-???????????
+        pos1        number;  -- ??????? ???????????
+        pos2        number;  -- ??????? ?????????? ???????????
+    begin
+  -- ??????? ? ?????? ????????????? ??????????? ?? ???? ? ??? ??
+        delim_ch := substr(word_delims, 1, 1);
+        delims_long := rpad(delim_ch,
+                            length(word_delims),
+                            delim_ch);
+        text := delim_ch
+                || ltrim(rtrim(translate(text_in, word_delims, delims_long)))
+                || delim_ch;
+  -- ??????? ????????? ?????
+        pos1 := 1;
+        pos2 := 1;
+        while
+            ( pos1 > 0 )
+            and ( pos2 > 0 )
+        loop
+            pos2 := instr(text, delim_ch, pos1 + 1, 1);
+            if pos2 - pos1 > 1 then
+        -- ????? ????????? ????????????? ???? ???????? ??????? (?????)
+                word_no := word_no + 1;
+                if word_no = word_no_in then
+            -- ????? ????? ????????? ? ?????????? - ??? ??, ??? ??? ????
+                    ret_val := substr(text, pos1 + 1, pos2 - pos1 - 1);
+                    exit;
+                end if;
+
+            end if;
+
+            pos1 := pos2;
+        end loop;
+
+        return ( ret_val );
+    exception
+        when others then
+            return null;
+    end get_word;
+/* ************************************************ */
+    function word_suf (
+        txt_in             in varchar2,
+        suf_in             in varchar2,
+        word_delimiters_in in varchar2 default ''
+    ) return varchar2 is
+
+        wend        number;
+        wstart      number := 1;
+        retval      varchar2(2000) := null;  -- ???? ??? ?????? ????????
+        word_delims varchar2(255) := nvl(word_delimiters_in, dflt_word_delims);
+    begin
+        wend := instr(
+            upper(txt_in),
+            upper(suf_in)
+        );
+        if wend > 0 then
+            for ii in 1..wend loop -- ????? ?? ???????????
+                if instr(word_delims,
+                         substr(txt_in, wend - ii, 1)) > 0 then
+                    wstart := wend - ii + 1;
+                    exit;
+                end if;
+            end loop;
+
+            retval := substr(txt_in,
+                             wstart,
+                             wend - wstart + length(suf_in));
+
+        end if;
+
+        return retval;
+    exception
+        when others then
+            return null;
+    end word_suf;
+
+    function get_nfld (
+        fld_in  in varchar2,
+        abon_in in number,
+        dop_in  in varchar2 := null
+    ) return varchar2 is
+/*
+ ??????????.
+  ????????? ???????? ???? fld_in ??? ???????? abon_in
+  ??? ???? ????? ????????? (????? ??????????? '^') ????? ???????
+  ?????      ??? ??? ???????
+  25.11.2002 mal + mask_v
+  20.05.2002 mal ????????
+*/
+        fld_v        varchar2(40) := upper(get_word(fld_in, 1, '^'));
+        mask_v       varchar2(40) := nvl(
+            get_word(fld_in, 2, '^'),
+            'fmMonth dd, yyyy'
+        );
+        fld_name     varchar2(40);
+        return_value varchar2(4000);
+        stmt         varchar2(4000);
+    begin
+ --  mask_v := replace (mask_v, '_', ' ');
+        if fld_v like 'PERSON.%' then
+            fld_name := substr(fld_v, 8);
+            stmt := 'begin pc_lex.dummy := pc_lex.c1rec.'
+                    || fld_name
+                    || '; end;';
+            execute immediate stmt;
+            return_value := dummy;
+        elsif fld_v = 'SYSDATE' then
+            return_value := to_char(sysdate, mask_v);
+        elsif fld_v = 'INSURE.START_DATE' then
+            return_value := to_char(c1rec.start_datei, mask_v);
+        elsif fld_v = 'ACCOUNT.START_DATE' then
+            return_value := to_char(c1rec.start_datea, mask_v);
+        elsif fld_v = 'PROC' then
+            return_value := 'proc=='
+                            || mask_v
+                            || '==';   -- ??? mask_v ??? ??? ?????????
+  --return_value := execute immediate mask_v ||'(kdog_in, dat1_in)';
+        else
+            return_value := ' "--'
+                            || fld_in
+                            || '--" ';
+        end if;
+
+        return ( return_value );
+    exception
+        when others then
+            return ( 'err Get_nfld '
+                     || fld_in );--||' '||stmt);
+    end get_nfld;
+
+    function let_abon (
+        txt_in  in varchar2,
+        abon_in in number,
+        dop_in  in varchar2 := null
+    ) return varchar2 is
+/*
+ * ?????????? ???????????????? ?? '~' ? ?????? txt_in ??? ???????? abon_in
+ *  18.05.2002 mal
+ */
+        txt_val varchar2(4000) := '';
+        ret_val varchar2(4000);
+        fld_v   varchar2(40);
+        part_v  varchar2(4000);
+-- SELECT SUM(amount) FROM INCOME WHERE ACC_ID = 1044
+    begin
+        open c1(abon_in);
+        fetch c1 into c1rec;
+        close c1;
+        for wc in 1..word_count(txt_in, '~') -- ?????????? ???????????
+         loop
+            part_v := get_word(txt_in, wc, '~');   -- ????? ?????? ????? '~'
+            fld_v := get_word(part_v, 1, ' |');   -- ?????? ????? = ??? ???????????
+            if wc > 1 then  -- ????? ?? ?????? ?????????? ? ???????????
+                part_v := ltrim(part_v, fld_v || '|');       -- ?????? ?????? ?????
+                txt_val := txt_val
+                           || get_nfld(fld_v, abon_in, dop_in); -- ???????? ???????????
+            end if;
+
+            txt_val := txt_val || part_v;
+        end loop;
+
+        ret_val := ''
+                   || txt_val
+                   || '';
+        return ret_val;
+--EXCEPTION WHEN OTHERS THEN RETURN ('Err Let_abon '||abon_in||' '||SQLCODE);
+    end let_abon;
+
+    function char_only (
+        str_in in varchar2
+    ) return varchar2 is
+-- remove all non-char from str_in
+        f varchar2(4000) := upper(str_in);
+    begin
+        return replace(
+            translate(f,
+                      nvl(
+                translate(f, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', ' '),
+                ' '
+            ),
+                      ' '),
+            ' ',
+            ''
+        );
+    end char_only;
+-- ????????? ??????? ?????? ?? ?????????, ???????? ?? ????????? ?????? (cr+lf)
+-- ????:
+--    ?????
+--    ????? ?????????
+--    ??????? ????? ?????????? (0-???)
+-- ?????
+--    ??????????????? ??????
+    function wrap (
+        txt_in          in varchar2,
+        len_fragment_in in number,
+        num_line        in number default 0
+    ) return varchar2 is
+
+        v_txt        varchar2(32000);
+        new_txt      varchar2(32000);
+        tmp_str      varchar2(32000);
+        width_line_v number;
+        n_space      number;
+        n_zpt        number;
+        n_br         number;
+        cnt_line     number;
+        n            number;
+        k            number;
+    begin
+        new_txt := null;
+        cnt_line := 0;
+        if nvl(len_fragment_in, 0) = 0 then
+            width_line_v := 52;  -- ????? ????????? ?? ?????????
+        else
+            width_line_v := len_fragment_in;  -- ?????? ???? (???????????? ????? ??????)
+        end if;
+
+        v_txt := replace(
+            replace(txt_in,
+                    chr(13),
+                    '~'),
+            chr(10),
+            ''
+        );
+
+        for k in 1..10000 loop
+            if length(v_txt) <= width_line_v
+       --  if 3=4
+             then
+                v_txt := replace(v_txt, '~', crlf_v);
+                if new_txt is not null then
+                    new_txt := new_txt || crlf_v;
+                end if;
+                new_txt := new_txt || v_txt;
+                cnt_line := cnt_line + 1;
+                exit;
+            else
+                tmp_str := substr(v_txt, 1, width_line_v);
+                n_br := instr(tmp_str, '~', 1);
+                n_space := instr(tmp_str, ' ', -1);
+                n_zpt := instr(tmp_str, ',', -1);
+                n := n_space;
+                if n_zpt > n then
+                    n := n_zpt;
+                end if;
+                if n_br <> 0 then
+                    if n_br < n then
+                        n := n_br;
+                    end if;
+                end if;
+
+                if n = 0 then
+                    if new_txt is not null then
+                        new_txt := new_txt || crlf_v;
+                    end if;
+                    new_txt := new_txt || tmp_str;
+                    cnt_line := cnt_line + 1;
+                    n := width_line_v;
+                else
+                    if new_txt is not null then
+                        new_txt := new_txt || crlf_v;
+                    end if;
+                    new_txt := new_txt
+                               || substr(tmp_str, 1, n);
+                    cnt_line := cnt_line + 1;
+                end if;
+
+                v_txt := substr(v_txt, n + 1, 32000);
+                if num_line > 0 then
+                    if cnt_line >= num_line then
+                        exit;
+                    end if;
+                end if;
+
+                if v_txt is null then
+                    exit;
+                end if;
+            end if;
+        end loop;
+
+        new_txt := replace(new_txt, '~', ' ');
+        return new_txt;
+    end wrap;
+
+end pc_lex;
+/
+

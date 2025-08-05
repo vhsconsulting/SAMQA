@@ -1,0 +1,47 @@
+-- liquibase formatted sql
+-- changeset SAMQA:1754374156847 stripComments:false logicalFilePath:BASE_RELEASE\samqa\tables\enrollment_edi_header.sql runAlways:false runOnChange:false replaceIfExists:true failOnError:true
+-- sqlcl_snapshot src/database/samqa/tables/enrollment_edi_header.sql:null:1c648539a8e69e60a7a3709b2489fe3793fc6d85:create
+
+create table samqa.enrollment_edi_header (
+    trans_control_num      varchar2(9 byte),
+    trans_purpose_cd       varchar2(2 byte),
+    trans_ref_id           varchar2(30 byte),
+    trans_create_dt        varchar2(8 byte),
+    trans_create_time      varchar2(8 byte),
+    time_zone_cd           varchar2(2 byte),
+    previous_trans_ref_id  varchar2(30 byte),
+    action_cd              varchar2(2 byte),
+    master_policy_num      varchar2(30 byte),
+    file_effective_dt      varchar2(8 byte),
+    maint_effective_dt     varchar2(8 byte),
+    enrollment_dt          varchar2(8 byte),
+    sponsor_id             varchar2(80 byte),
+    sponsor_name           varchar2(60 byte),
+    insurer_id             varchar2(80 byte),
+    insurer_name           varchar2(60 byte),
+    broker_id              varchar2(80 byte),
+    broker_name            varchar2(60 byte),
+    tpa_id                 varchar2(80 byte),
+    tpa_name               varchar2(60 byte),
+    broker_account         varchar2(35 byte),
+    tpa_account            varchar2(35 byte),
+    records_received       number,
+    records_processed      number,
+    records_failed         number,
+    segments_received      number,
+    status_cd              varchar2(10 byte),
+    segment_element_ind    varchar2(1 byte),
+    element_position       varchar2(5 byte),
+    element_ref_number     varchar2(5 byte),
+    bad_element_data       varchar2(80 byte),
+    segment_cd             varchar2(3 byte),
+    segment_position_count number(5, 0),
+    loop_id                varchar2(5 byte),
+    syntax_err_cd          varchar2(2 byte),
+    error_desc             varchar2(100 byte),
+    header_id              number,
+    creation_date          date,
+    last_update_date       date,
+    batch_number           number
+);
+

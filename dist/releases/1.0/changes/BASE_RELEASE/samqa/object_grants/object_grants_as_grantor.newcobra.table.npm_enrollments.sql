@@ -1,0 +1,28 @@
+-- liquibase formatted sql
+-- changeset SAMQA:1754373926282 stripComments:false logicalFilePath:BASE_RELEASE\samqa\object_grants\object_grants_as_grantor.newcobra.table.npm_enrollments.sql runAlways:false runOnChange:false replaceIfExists:true failOnError:true
+-- sqlcl_snapshot src/database/newcobra/object_grants/object_grants_as_grantor.newcobra.table.npm_enrollments.sql:null:441c875f38d38abd8de621bd80b9682e93ec7161:create
+
+grant alter on newcobra.npm_enrollments to samqa;
+
+grant delete on newcobra.npm_enrollments to samqa;
+
+grant index on newcobra.npm_enrollments to samqa;
+
+grant insert on newcobra.npm_enrollments to samqa;
+
+grant select on newcobra.npm_enrollments to samqa;
+
+grant update on newcobra.npm_enrollments to samqa;
+
+grant references on newcobra.npm_enrollments to samqa;
+
+grant read on newcobra.npm_enrollments to samqa;
+
+grant on commit refresh on newcobra.npm_enrollments to samqa;
+
+grant query rewrite on newcobra.npm_enrollments to samqa;
+
+grant debug on newcobra.npm_enrollments to samqa;
+
+grant flashback on newcobra.npm_enrollments to samqa;
+

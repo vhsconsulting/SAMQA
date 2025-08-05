@@ -1,0 +1,45 @@
+-- liquibase formatted sql
+-- changeset SAMQA:1754374162249 stripComments:false logicalFilePath:BASE_RELEASE\samqa\tables\person_last_year.sql runAlways:false runOnChange:false replaceIfExists:true failOnError:true
+-- sqlcl_snapshot src/database/samqa/tables/person_last_year.sql:null:547449e110bb5f8684e7b039abc0bbf3650c7053:create
+
+create table samqa.person_last_year (
+    pers_id            number(9, 0) not null enable,
+    first_name         varchar2(50 byte),
+    middle_name        varchar2(1 byte),
+    last_name          varchar2(50 byte) not null enable,
+    birth_date         date,
+    title              varchar2(20 byte),
+    gender             varchar2(1 byte),
+    ssn                varchar2(20 byte),
+    drivlic            varchar2(20 byte),
+    passport           varchar2(20 byte),
+    address            varchar2(100 byte),
+    city               varchar2(30 byte),
+    state              varchar2(2 byte),
+    zip                varchar2(10 byte),
+    county             varchar2(20 byte),
+    pobox              varchar2(20 byte),
+    mailmet            number(3, 0),
+    phone_day          varchar2(100 byte),
+    phone_even         varchar2(100 byte),
+    email              varchar2(100 byte),
+    pers_main          number(9, 0),
+    relat_code         number(3, 0),
+    ben_code           varchar2(1 byte),
+    ben_rate           number(3, 0),
+    password           varchar2(20 byte),
+    note               varchar2(4000 byte),
+    entrp_id           number(9, 0),
+    profession         varchar2(20 byte),
+    acc_numc           varchar2(20 byte),
+    mass_enrollment_id number,
+    person_type        varchar2(30 byte),
+    creation_date      date,
+    created_by         number,
+    last_update_date   date,
+    last_updated_by    number,
+    card_issue_flag    varchar2(1 byte),
+    pers_start_date    date,
+    pers_end_date      date
+);
+

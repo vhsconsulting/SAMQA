@@ -1,0 +1,48 @@
+-- liquibase formatted sql
+-- changeset SAMQA:1754374162769 stripComments:false logicalFilePath:BASE_RELEASE\samqa\tables\sales_commission_history.sql runAlways:false runOnChange:false replaceIfExists:true failOnError:true
+-- sqlcl_snapshot src/database/samqa/tables/sales_commission_history.sql:null:9743b14d0aa7be9c5e1a7e48416976a619bcb519:create
+
+create table samqa.sales_commission_history (
+    pers_id           number(9, 0),
+    first_name        varchar2(50 byte),
+    middle_name       varchar2(1 byte),
+    last_name         varchar2(50 byte),
+    ssn               varchar2(20 byte),
+    relat_name        varchar2(255 byte),
+    acc_num           varchar2(20 byte) not null enable,
+    employer          varchar2(100 byte),
+    account_status    varchar2(1000 byte),
+    current_balance   number,
+    card_ordered_on   varchar2(10 byte),
+    complete          varchar2(3 byte),
+    broker            varchar2(4000 byte),
+    user_name         varchar2(100 byte),
+    sales_rep         varchar2(4000 byte),
+    account_type      varchar2(4000 byte),
+    start_date        date not null enable,
+    created_by        number,
+    creation_date     date,
+    salesrep_id       number,
+    entrp_id          number,
+    er_setup_fee      number,
+    carrier_name      varchar2(255 byte),
+    no_of_hra         number default 0,
+    no_of_fsa         number default 0,
+    no_of_trn         number default 0,
+    no_of_pkg         number default 0,
+    no_of_iir         number default 0,
+    no_of_lpf         number default 0,
+    no_of_dca         number default 0,
+    no_of_ua          number default 0,
+    no_of_ee          number default 0,
+    ga_id             number,
+    acc_id            number,
+    plan_start_date   date,
+    plan_end_date     date,
+    renewal_date      date,
+    product_type      varchar2(30 byte),
+    fee_paid          number,
+    period_start_date date,
+    period_end_date   date
+);
+
